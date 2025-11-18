@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { Water } from 'three/addons/objects/Water.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -47,7 +48,7 @@ cube.position.y = 0.5;
 const shape = new THREE.Shape();
 const x = - 10.5;
 const y = - 5;
-shape.moveTo( x + 2.5, y + 2.5 );
+//shape.moveTo( x + 2.5, y + 2.5 );
 shape.bezierCurveTo( x + 2.5, y + 2.5, x + 2, y, x, y );
 shape.bezierCurveTo( x - 3, y, x - 3, y + 3.5, x - 3, y + 3.5 );
 shape.bezierCurveTo( x - 3, y + 5.5, x - 1.5, y + 7.7, x + 2.5, y + 9.5 );
@@ -66,23 +67,36 @@ const leafMaterial = new THREE.MeshBasicMaterial({
 const leaf1 = new THREE.Mesh(leafGeometry, leafMaterial);
 const leaf2 = new THREE.Mesh(leafGeometry, leafMaterial);
 const leaf3 = new THREE.Mesh(leafGeometry, leafMaterial);
-//leaf1.rotation.y = Math.PI/2;
+const leaf4 = new THREE.Mesh(leafGeometry, leafMaterial);
+
+
 leaf1.scale.set(0.1, 0.1, 0.1);
 leaf1.rotation.x = -Math.PI/2;
+leaf1.position.y = 0;
+leaf1.position.x = -2;
+leaf1.position.z = 2;
 scene.add(leaf1);
 
 leaf2.scale.set(0.1, 0.1, 0.1);
-leaf2.position.y = -4;
-leaf2.position.x = 2;
+leaf2.position.y = 0;
+leaf2.position.x = 4;
+leaf2.position.z = 2;
 leaf2.rotation.x = -Math.PI/2;
 scene.add(leaf2);
 
-leaf3.position.y = 2;
-leaf3.position.x = 5;
-leaf3.position.x = -2;
-leaf3.scale.set(0.2, 0.2, 0.2);
+leaf3.position.y = -3;
+leaf3.position.x = 0.8;
+leaf3.position.z = 2;
+leaf3.scale.set(0.1, 0.1, 0.1);
 leaf3.rotation.x = -Math.PI/2;
 scene.add(leaf3);
+
+leaf4.position.y = 3;
+leaf4.position.x = 0.8;
+leaf4.position.z = 2;
+leaf4.scale.set(0.1, 0.1, 0.1);
+leaf4.rotation.x = -Math.PI/2;
+scene.add(leaf4);
 
 
 const points = [];
@@ -130,15 +144,141 @@ rock4.rotation.x = Math.PI/2;
 rock4.scale.set(0.1, 0.1, 0.1);
 scene.add(rock4);
 
+
+class CustomSinCurve extends THREE.Curve {
+
+	constructor( scale ) {
+		super();
+		this.scale = scale;
+	}
+	getPoint( t ) {
+		const tx = t * 3 - 1.5;
+		const ty = Math.sin(  Math.PI * t );
+		const tz = 1;
+		return new THREE.Vector3( tx, ty, tz ).multiplyScalar( this.scale );
+	}
+}
+
+const path = new CustomSinCurve( 2 );
+const tubularSegments =  18;  
+const radius =  0.4;  
+const radialSegments = 11;  
+const closed = false;  
+const vineGeometry = new THREE.TubeGeometry(
+	path, tubularSegments, radius, radialSegments, closed );
+const vineMaterial = new THREE.MeshBasicMaterial({
+  color:0x5d782e,
+  side: THREE.DoubleSide
+});
+
+const vine1 = new THREE.Mesh(vineGeometry, vineMaterial);
+vine1.rotation.x = Math.PI/2;
+vine1.rotation.z = Math.PI/4;
+vine1.rotation.y = Math.PI/6;
+vine1.position.x = 0;
+vine1.position.z = 2;
+vine1.position.y = 0;
+scene.add(vine1);
+
+const vine2 = new THREE.Mesh(vineGeometry, vineMaterial);
+vine2.rotation.x = Math.PI/2;
+vine2.rotation.z = -Math.PI/4;
+vine2.rotation.y = Math.PI/6;
+vine2.position.x = -2;
+vine2.position.z = 2;
+vine2.position.y = 4;
+scene.add(vine2);
+
+const vine3 = new THREE.Mesh(vineGeometry, vineMaterial);
+vine3.rotation.x = Math.PI/2;
+vine3.rotation.z = Math.PI/4;
+vine3.rotation.y = Math.PI/6;
+vine3.position.x = -1.5;
+vine3.position.z = 2;
+vine3.position.y = 1;
+scene.add(vine3);
+
+const radiusW = 7;  
+const segments = 24;  
+const waterGeometry = new THREE.CircleGeometry( radiusW, segments );
+
+// Create realistic water material with shader
+const waterMaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    time: { value: 0 },
+    color1: { value: new THREE.Color(0x1e6b7e) },  // Deep blue
+    color2: { value: new THREE.Color(0x4db8d6) },  // Light blue
+  },
+  vertexShader: `
+    uniform float time;
+    varying float wave;
+    
+    void main() {
+      vec3 pos = position;
+      
+      // Create wave effect using multiple sine waves
+      float wave1 = sin(pos.x * 2.0 + time) * 0.15;
+      float wave2 = sin(pos.y * 1.5 - time * 0.7) * 0.12;
+      float wave3 = sin((pos.x + pos.y) * 1.0 + time * 0.5) * 0.1;
+      
+      pos.z += wave1 + wave2 + wave3;
+      wave = wave1 + wave2 + wave3;
+      
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    }
+  `,
+  fragmentShader: `
+    uniform vec3 color1;
+    uniform vec3 color2;
+    varying float wave;
+    
+    void main() {
+      // Create color variation based on waves
+      float intensity = (wave + 0.4) * 0.8;
+      vec3 color = mix(color1, color2, intensity);
+      
+      // Add shimmer effect
+      float shimmer = 0.5 + 0.5 * sin(wave * 10.0);
+      color += shimmer * 0.1;
+      
+      // Add transparency for water effect
+      float alpha = 0.85;
+      
+      gl_FragColor = vec4(color, alpha);
+    }
+  `,
+  side: THREE.DoubleSide,
+  wireframe: false
+});
+
+const waterPond = new THREE.Mesh(waterGeometry, waterMaterial);
+waterPond.scale.set(0.30, 0.30, 0.30);
+scene.add(waterPond);
+
 camera.position.z = 5;
 camera.position.y = 7;
-//camera.up.set(0, 0, 1);
+camera.up.set(0, 0, 1);
 camera.lookAt(0, 0, 0);
 
 
 const controls = new OrbitControls(camera, renderer.domElement);
+let time = 0;
 
 function animate() { 
   controls.update();
+  time += 0.04; 
+  leaf1.position.z = 2* Math.sin(time);
+  leaf2.position.z = 2* Math.sin(time);
+  leaf3.position.z = Math.sin(time);
+  leaf4.position.z = Math.sin(time);
+
+  //Growing vines maybe?
+  vine1.scale.set( Math.abs(Math.sin(time/5)),  Math.abs(Math.sin(time/4)),  Math.abs(Math.sin(time/4)));
+  vine2.scale.set(Math.abs(Math.sin(time/4)),  Math.abs(Math.sin(time/5)),  Math.abs(Math.sin(time/4)));
+  vine3.scale.set(Math.abs(Math.sin(time/3)),  Math.abs(Math.sin(time/3)),  Math.abs(Math.sin(time/5)));
+  
+  // Update water shader time
+  waterMaterial.uniforms.time.value = time;
+  
   renderer.render(scene, camera);
 }
