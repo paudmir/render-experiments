@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -27,9 +28,12 @@ const thetaSegments = 18;
 const ringGeometry = new THREE.RingGeometry(
 	innerRadius, outerRadius, thetaSegments );
   const ringMaterial = new THREE.MeshBasicMaterial({
-  color: 0xF46ccc
+  color: 0xF46ccc,
+  side: THREE.DoubleSide
+  
 });
 const rings = new THREE.Mesh(ringGeometry, ringMaterial);
+//rings.rotation.x = THREE.MathUtils.degToRad(45);
 scene.add(rings);
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -55,15 +59,21 @@ const leafMaterial = new THREE.MeshBasicMaterial({
   color: 0x12D8cc,
   side: THREE.DoubleSide
 });
+
+
+
+
 const leaf1 = new THREE.Mesh(leafGeometry, leafMaterial);
 const leaf2 = new THREE.Mesh(leafGeometry, leafMaterial);
 const leaf3 = new THREE.Mesh(leafGeometry, leafMaterial);
 //leaf1.rotation.y = Math.PI/2;
-leaf1.scale.set(0.5, 0.5, 0.5);
-leaf1.rotation.z = Math.PI/3;
+leaf1.scale.set(0.1, 0.1, 0.1);
+leaf1.rotation.x = -Math.PI/2;
 scene.add(leaf1);
+
+leaf2.scale.set(0.1, 0.1, 0.1);
 leaf2.position.y = -4;
-leaf2.position.x = 15;
+leaf2.position.x = 2;
 leaf2.rotation.x = -Math.PI/2;
 scene.add(leaf2);
 
@@ -71,9 +81,54 @@ leaf3.position.y = 2;
 leaf3.position.x = 5;
 leaf3.position.x = -2;
 leaf3.scale.set(0.2, 0.2, 0.2);
-leaf3.rotation.z = Math.PI/2;
+leaf3.rotation.x = -Math.PI/2;
 scene.add(leaf3);
 
+
+const points = [];
+for ( let i = 0; i < 10; ++ i ) {
+	points.push( new THREE.Vector2( Math.sin( i * 0.2 ) * 3 + 3, ( i - 5 ) * .8 ) );
+}
+
+const rockGeometry = new THREE.LatheGeometry( points );
+const rockMaterial = new THREE.MeshBasicMaterial({
+  color: 0x553c2c,
+  side: THREE.DoubleSide
+});
+const rock1 = new THREE.Mesh(rockGeometry, rockMaterial);
+const rock2 = new THREE.Mesh(rockGeometry, rockMaterial);
+const rock3 = new THREE.Mesh(rockGeometry, rockMaterial);
+const rock4 = new THREE.Mesh(rockGeometry, rockMaterial);
+
+rock1.position.y = 0;
+rock1.position.x = -3;
+rock1.position.z = 1;
+
+rock1.rotation.x = Math.PI/2;
+rock1.scale.set(0.1, 0.1, 0.1);
+scene.add(rock1);
+
+rock2.position.y = 0;
+rock2.position.x = 3;
+rock2.position.z = 1;
+rock2.rotation.x = Math.PI/2;
+rock2.scale.set(0.1, 0.1, 0.1);
+scene.add(rock2);
+
+
+rock3.position.y = -3;
+rock3.position.x = 0;
+rock3.position.z = 1;
+rock3.rotation.x = Math.PI/2;
+rock3.scale.set(0.1, 0.1, 0.1);
+scene.add(rock3);
+
+rock4.position.y = 3;
+rock4.position.x = 0;
+rock4.position.z = 1;
+rock4.rotation.x = Math.PI/2;
+rock4.scale.set(0.1, 0.1, 0.1);
+scene.add(rock4);
 
 camera.position.z = 5;
 camera.position.y = 7;
@@ -81,7 +136,9 @@ camera.position.y = 7;
 camera.lookAt(0, 0, 0);
 
 
+const controls = new OrbitControls(camera, renderer.domElement);
 
-function animate() {
+function animate() { 
+  controls.update();
   renderer.render(scene, camera);
 }
