@@ -265,7 +265,7 @@ const sphereSize = 0.5;
 //scene.add( pointLightHelper );
 
 const loader = new GLTFLoader(); 
-loader.load( './assets/mushrooms.glb', function ( gltf ) 
+loader.load( '/assets/mushrooms.glb', function ( gltf ) 
 { 
   gltf.scene.rotation.x = Math.PI / 3;  // Rotate around X-axis
   gltf.scene.rotation.y = Math.PI / 4;  // Rotate around Y-axis
@@ -276,7 +276,7 @@ loader.load( './assets/mushrooms.glb', function ( gltf )
 undefined, function ( error ) 
 { console.error( error ); } );
 
-loader.load( './assets/mushrooms.glb', function ( gltf ) 
+loader.load( '/assets/mushrooms.glb', function ( gltf ) 
 { 
   gltf.scene.rotation.x = Math.PI / 3;  // Rotate around X-axis
   gltf.scene.rotation.y = Math.PI / 3;  // Rotate around Y-axis
