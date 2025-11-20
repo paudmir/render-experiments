@@ -16,7 +16,7 @@ renderer.setAnimationLoop(animate);
 document.body.appendChild(renderer.domElement);
 
 const planeGeometry = new THREE.PlaneGeometry(7, 7);
-const planeMaterial = new THREE.MeshBasicMaterial({
+const planeMaterial = new THREE.MeshPhongMaterial({
   color: 0xcccccc
 });
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -28,7 +28,7 @@ const outerRadius = 4;
 const thetaSegments = 18;  
 const ringGeometry = new THREE.RingGeometry(
 	innerRadius, outerRadius, thetaSegments );
-  const ringMaterial = new THREE.MeshBasicMaterial({
+  const ringMaterial = new THREE.MeshPhongMaterial({
   color: 0xF46ccc,
   side: THREE.DoubleSide
   
@@ -40,7 +40,7 @@ scene.add(rings);
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 
 geometry.translate(0, 0, 0.5);
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
 const cube = new THREE.Mesh(geometry, material);
 cube.position.y = 0.5;
 //scene.add(cube);
@@ -56,7 +56,7 @@ shape.bezierCurveTo( x + 6, y + 7.7, x + 8, y + 4.5, x + 8, y + 3.5 );
 shape.bezierCurveTo( x + 8, y + 3.5, x + 8, y, x + 5, y );
 shape.bezierCurveTo( x + 3.5, y, x + 2.5, y + 2.5, x + 2.5, y + 2.5 );
 const leafGeometry = new THREE.ShapeGeometry( shape );
-const leafMaterial = new THREE.MeshBasicMaterial({
+const leafMaterial = new THREE.MeshPhongMaterial({
   color: 0x12D8cc,
   side: THREE.DoubleSide
 });
@@ -105,7 +105,7 @@ for ( let i = 0; i < 10; ++ i ) {
 }
 
 const rockGeometry = new THREE.LatheGeometry( points );
-const rockMaterial = new THREE.MeshBasicMaterial({
+const rockMaterial = new THREE.MeshPhongMaterial({
   color: 0x553c2c,
   side: THREE.DoubleSide
 });
@@ -166,7 +166,7 @@ const radialSegments = 11;
 const closed = false;  
 const vineGeometry = new THREE.TubeGeometry(
 	path, tubularSegments, radius, radialSegments, closed );
-const vineMaterial = new THREE.MeshBasicMaterial({
+const vineMaterial = new THREE.MeshPhongMaterial({
   color:0x5d782e,
   side: THREE.DoubleSide
 });
@@ -255,6 +255,20 @@ const waterPond = new THREE.Mesh(waterGeometry, waterMaterial);
 waterPond.scale.set(0.30, 0.30, 0.30);
 scene.add(waterPond);
 
+//const color = 0x34452D; 
+//const intensity = 80; 
+//const light = new THREE.AmbientLight( color, intensity ); 
+//light.position.set( 5, 5, 5 ); 
+//scene.add( light );
+
+const pointLight = new THREE.PointLight( 0x34fE7, 80, 60 );
+pointLight.position.set( 6, 6, 6 );
+scene.add( pointLight );
+
+const sphereSize = 0.5;
+//const pointLightHelper = new THREE.PointLightHelper( pointLight, sphereSize ); 
+//scene.add( pointLightHelper );
+
 camera.position.z = 5;
 camera.position.y = 7;
 camera.up.set(0, 0, 1);
@@ -276,6 +290,8 @@ function animate() {
   vine1.scale.set( Math.abs(Math.sin(time/5)),  Math.abs(Math.sin(time/4)),  Math.abs(Math.sin(time/4)));
   vine2.scale.set(Math.abs(Math.sin(time/4)),  Math.abs(Math.sin(time/5)),  Math.abs(Math.sin(time/4)));
   vine3.scale.set(Math.abs(Math.sin(time/3)),  Math.abs(Math.sin(time/3)),  Math.abs(Math.sin(time/5)));
+
+  pointLight.position.set(Math.sin(2*time), Math.sin(time/3), Math.sin(2*time));
   
   // Update water shader time
   waterMaterial.uniforms.time.value = time;
