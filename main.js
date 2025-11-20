@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Water } from 'three/addons/objects/Water.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import GUI from "lil-gui";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -289,6 +290,11 @@ loader.load( '/assets/mushrooms.glb', function ( gltf )
 undefined, function ( error ) 
 { console.error( error ); } );
 
+const gui = new GUI({ title: "Controls", width: 300 }); 
+const mushiesFolder = gui.addFolder("Position light"); 
+mushiesFolder.add(pointLight.position, "x").min(-5).max(5).step(0.5).name("pos x"); 
+mushiesFolder.add(pointLight.position, "y").min(0).max(1).step(0.5).name("pos y"); 
+mushiesFolder.add(pointLight.position, "z").min(-5).max(10).step(0.5).name("pos z"); 
 
 // ANYTHING ELSE SHOULD BE ADDED BEFORE THE CAMERa
 camera.position.z = 5;
@@ -313,7 +319,7 @@ function animate() {
   vine2.scale.set(Math.abs(Math.sin(time/4)),  Math.abs(Math.sin(time/5)),  Math.abs(Math.sin(time/4)));
   vine3.scale.set(Math.abs(Math.sin(time/3)),  Math.abs(Math.sin(time/3)),  Math.abs(Math.sin(time/5)));
 
-  pointLight.position.set(Math.sin(2*time), Math.sin(time/3), Math.sin(2*time));
+  //pointLight.position.set(Math.sin(2*time), Math.sin(time/3), Math.sin(2*time));
   
   // Update water shader time
   waterMaterial.uniforms.time.value = time;
