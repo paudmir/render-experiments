@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { Water } from 'three/addons/objects/Water.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -255,12 +256,6 @@ const waterPond = new THREE.Mesh(waterGeometry, waterMaterial);
 waterPond.scale.set(0.30, 0.30, 0.30);
 scene.add(waterPond);
 
-//const color = 0x34452D; 
-//const intensity = 80; 
-//const light = new THREE.AmbientLight( color, intensity ); 
-//light.position.set( 5, 5, 5 ); 
-//scene.add( light );
-
 const pointLight = new THREE.PointLight( 0x34fE7, 80, 60 );
 pointLight.position.set( 6, 6, 6 );
 scene.add( pointLight );
@@ -269,6 +264,33 @@ const sphereSize = 0.5;
 //const pointLightHelper = new THREE.PointLightHelper( pointLight, sphereSize ); 
 //scene.add( pointLightHelper );
 
+const loader = new GLTFLoader(); 
+loader.load( 'assets/mushrooms.glb', function ( gltf ) 
+{ 
+  gltf.scene.rotation.x = Math.PI / 3;  // Rotate around X-axis
+  gltf.scene.rotation.y = Math.PI / 4;  // Rotate around Y-axis
+  gltf.scene.rotation.z = Math.PI / 8;             // Rotate around Z-axis
+  gltf.scene.position.x = 5; 
+  scene.add( gltf.scene ); 
+}, 
+undefined, function ( error ) 
+{ console.error( error ); } );
+
+loader.load( 'assets/mushrooms.glb', function ( gltf ) 
+{ 
+  gltf.scene.rotation.x = Math.PI / 3;  // Rotate around X-axis
+  gltf.scene.rotation.y = Math.PI / 3;  // Rotate around Y-axis
+  gltf.scene.rotation.z = Math.PI / 8;             // Rotate around Z-axis
+  gltf.scene.position.x =-1; 
+  gltf.scene.position.y = 3; 
+
+  scene.add( gltf.scene ); 
+}, 
+undefined, function ( error ) 
+{ console.error( error ); } );
+
+
+// ANYTHING ELSE SHOULD BE ADDED BEFORE THE CAMERa
 camera.position.z = 5;
 camera.position.y = 7;
 camera.up.set(0, 0, 1);
